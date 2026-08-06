@@ -21,7 +21,12 @@ h1 em { color: #6c67bd; font-style: italic; }
 .join-button:hover, .join-button:focus-visible { background: #4f4b9b; box-shadow: 0 18px 34px rgb(79 73 160 / 30%); transform: translateY(-2px); }
 .join-button:focus-visible { outline: 3px solid #9bd2df; outline-offset: 4px; }
 .join-button svg { width: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
-.hero__note { margin: 14px 0 0; color: #71809d; font-size: .77rem; }
+.buttons {
+  display: flex;
+  gap: 2cm;
+  margin-bottom: 15px;
+}
+.hero__note { margin: 14px 0 0; color: #71809d; font-size: 1rem; }
 .hero__image-wrap { position: relative; width: min(100%, 520px); margin: 0 auto; }
 .hero__image-wrap::before { position: absolute; inset: 5% -3% -5%; border: 1px solid #b7c7ec; border-radius: 56% 44% 47% 53% / 45% 52% 48% 55%; content: ''; }
 .hero__image { position: relative; display: block; width: 100%; border-radius: 56% 44% 47% 53% / 45% 52% 48% 55%; box-shadow: 0 25px 60px rgb(40 65 126 / 18%); }
@@ -30,3 +35,33 @@ h1 em { color: #6c67bd; font-style: italic; }
 .hero__orb--two { bottom: -180px; left: -120px; width: 340px; height: 340px; background: rgb(210 199 250 / 30%); }
 @media (min-width: 780px) { .hero__grid { grid-template-columns: 1.08fr .92fr; gap: 55px; } .hero { padding: 80px 0; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .join-button { transition: none; } }
+
+.section { padding: 86px 0; }
+.section--soft { background: #f4f9ff; }
+.section_buttons {
+  display: flex;
+  justify-content: center; /* Centraliza os botões */
+  align-items: center;
+  gap: 2cm;                /* Espaço entre eles */
+  margin-top: 2rem;        /* Distância do texto acima */
+}
+.section--lavender { background: linear-gradient(120deg, #f6f5ff, #fbfdff); }
+.narrow { max-width: 760px; }
+.center { text-align: center; }
+.section-kicker { margin: 0 0 13px; color: #6a63b5; font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+h2 { margin: 0; color: #243460; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.15rem, 5vw, 3.65rem); font-weight: 400; letter-spacing: -.045em; line-height: 1.06; }
+.lead, .section-heading > p:not(.section-kicker), .split-copy__text > p, .about__content > p, .ritual > p:not(.section-kicker), .final-cta p { color: #596986; line-height: 1.75; }
+.lead { margin: 25px 0 15px; }
+.statement-list { display: grid; gap: 9px; margin: 0 auto 28px; color: #394b78; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.1rem, 3vw, 1.42rem); font-style: italic; }
+.statement-list p { margin: 0; }
+.emphasis { color: #263866 !important; font-family: Georgia, 'Times New Roman', serif; font-size: 1.18rem; font-style: italic; line-height: 1.55; }
+.section-heading { max-width: 650px; margin-bottom: 35px; }.section-heading h2 { margin-bottom: 17px; }
+.cards { display: grid; gap: 14px; }.card { min-height: 178px; padding: 28px; border: 1px solid #dce7f4; border-radius: 18px; background: #fff; box-shadow: 0 8px 25px rgb(73 102 153 / 6%); }.card__number { color: #8e88cf; font-family: Georgia, 'Times New Roman', serif; font-size: 1.2rem; }.card p { margin: 30px 0 0; color: #263866; font-family: Georgia, 'Times New Roman', serif; font-size: 1.26rem; line-height: 1.3; }.section-close { margin: 40px 0 20px; }
+.split-copy { display: grid; gap: 32px; }.split-copy__text { max-width: 550px; }.split-copy__text > p { margin: 0 0 18px; }.clean-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0; margin: 22px 0; list-style: none; color: #40517b; }.clean-list li::before { content: '— '; color: #867fc8; }
+.about { display: grid; gap: 38px; align-items: center; }.about__photo { max-width: 410px; margin: 0 auto; }.about__photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 48% 52% 48% 52% / 38% 40% 60% 62%; box-shadow: 0 20px 50px rgb(50 74 122 / 15%); }.about__content h2 { margin-bottom: 22px; }.about__content > p { margin: 0 0 14px; }
+.testimonials { display: grid; gap: 14px; }.testimonials figure { display: flex; flex-direction: column; justify-content: space-between; min-height: 190px; margin: 0; padding: 26px; border: 1px solid #e3e9f4; border-radius: 16px; background: #fff; }.testimonials blockquote { margin: 0; color: #3b4b73; font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; font-style: italic; line-height: 1.5; }.testimonials figcaption { margin-top: 22px; color: #7770b8; font-size: .78rem; font-weight: 750; }
+.section--ritual { background: #eef7ff; }.ritual__details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; max-width: 610px; margin: 35px auto 24px; overflow: hidden; border: 1px solid #d5e4f2; border-radius: 14px; background: #d5e4f2; }.ritual__details p { display: grid; gap: 5px; margin: 0; padding: 18px 13px; background: #fbfdff; color: #31446f; }.ritual__details strong { color: #7583a3; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }.ritual .join-button { margin-top: 9px; }
+.final-cta { padding: 95px 0; background: #293966; color: #fff; }.final-cta h2 { color: #fff; }.final-cta p { max-width: 600px; margin: 23px auto 28px; color: #dce8ff; }.final-cta .section-kicker { color: #b9c8fd; }.final-cta .join-button { background: #fff; color: #45508c; box-shadow: none; }.final-cta .join-button:hover, .final-cta .join-button:focus-visible { background: #eaf4ff; }
+.footer { padding: 24px 0; background: #202d50; color: #c7d2ed; font-size: .76rem; }.footer > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; }.footer a { margin-left: 15px; text-decoration: none; }.footer a:hover, .footer a:focus-visible { color: #fff; text-decoration: underline; }
+@media (min-width: 680px) { .cards--three { grid-template-columns: repeat(3, 1fr); }.testimonials { grid-template-columns: repeat(2, 1fr); }.section { padding: 110px 0; } }
+@media (min-width: 820px) { .split-copy { grid-template-columns: .85fr 1.15fr; gap: 100px; }.about { grid-template-columns: .75fr 1.25fr; gap: 80px; }.testimonials { grid-template-columns: repeat(3, 1fr); }.testimonials figure:nth-child(4) { grid-column: 1 / span 1; }.section-heading:not(.center) { margin-left: 0; } }
