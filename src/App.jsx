@@ -129,9 +129,15 @@ function App() {
           <div className="about__content">
             <p className="section-kicker">Sobre Deise Martins</p>
             <h2 id="about-title">Um chamado para alinhar-se à sua missão de vida</h2>
-            <p>Eu sou Deise Martins, mestra espiritual formada em Letras pela PUC, terapeuta multidimensional, taróloga e especializada no caminho das Chamas Gêmeas.</p>
-            <p>Meu trabalho acolhe mulheres que sentem um chamado maior — de missão, propósito e prosperidade — mas ainda carregam bloqueios que travam seus caminhos.</p>
-            <p>Por meio de conteúdos e atendimentos, auxilio você a compreender os sinais da alma, alinhar-se à sua missão de vida e transformar sua dor em força.</p>
+            <p>Eu sou Deise Martins, mestra espiritual formada em Letras pela PUC, terapeuta multidimensional, taróloga, terapeuta akáshica, reprogramadora emocional e especializada no caminho das Chamas Gêmeas.</p>
+
+<p>Atuo com leitura de campo, condução energética e a força da Deusa Hécate para revelar o que está oculto, romper bloqueios e reposicionar você na frequência de realização.</p>
+
+<p>Sou reconhecida por ajudar mulheres a saírem da estagnação — principalmente dentro da dinâmica de Chamas Gêmeas, onde muitas se perdem esperando o outro… enquanto se abandonam.</p>
+
+<p>Aqui, você vai encarar a sua própria verdade e, assim, encontrar direção, consciência e mudança de identidade.</p>
+
+<p>Porque, no final, é isso que muda tudo: <strong>quem você se torna.</strong></p>
           </div>
         </div>
       </section>
