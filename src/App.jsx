@@ -1,5 +1,5 @@
-import heroImage from '../context/referencias/hero-01.png'
-import deiseImage from '../context/cliente/foto.jpeg'
+import heroImage from './assets/images/hero-01.png'
+import deiseImage from './assets/images/foto.jpeg'
 
 const whatsAppUrl = 'https://chat.whatsapp.com/FR3kHLSGMfaILcm4Jy7z9m?mode=gi_t&utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnWUydri8jsjbROGO2ueWdcVrJmVZt6XUiVLoiPwYpI-pniZWK3k1PNixJKMo_aem_ePVMDXognQksoqLzMaiPhw'
 
@@ -176,7 +176,7 @@ function App() {
           </div>
         </div>
       </section>
-      <footer className="footer"><div className="container"><span>Deise Martins</span><div><a href="https://www.instagram.com/deisemartins.portal/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.youtube.com/@deisemartins.portal" target="_blank" rel="noreferrer">YouTube</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform" target="_blank" rel="noreferrer">Confirmação de vínculo</a></div></div></footer>
+      <footer className="footer"><div className="container"><span>© 2026 Deise Martins. Todos os direitos reservados.</span><div><a href="https://www.instagram.com/deisemartins.portal/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.youtube.com/@deisemartins.portal" target="_blank" rel="noreferrer">YouTube</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform" target="_blank" rel="noreferrer">Confirmação de vínculo</a></div></div></footer>
     </main>
   )
 }
