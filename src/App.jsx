@@ -129,15 +129,19 @@ function App() {
           <div className="about__content">
             <p className="section-kicker">Sobre Deise Martins</p>
             <h2 id="about-title">Um chamado para alinhar-se à sua missão de vida</h2>
-            <p>Eu sou Deise Martins, mestra espiritual formada em Letras pela PUC, terapeuta multidimensional, taróloga, terapeuta akáshica, reprogramadora emocional e especializada no caminho das Chamas Gêmeas.</p>
+            <p>Eu sou Deise Martins, sacerdotisa, mestra espiritual formada em Letras pela PUC, terapeuta multidimensional, taróloga, terapeuta akáshica e reprogramadora emocional, especializada no caminho das Chamas Gêmeas.</p>
 
-<p>Atuo com leitura de campo, condução energética e a força da Deusa Hécate para revelar o que está oculto, romper bloqueios e reposicionar você na frequência de realização.</p>
+<p>Atuo com leitura de campo, condução energética e a força da Deusa Hécate para revelar o que está oculto, romper bloqueios profundos e reposicionar você na frequência de realização, poder e materialização.</p>
 
-<p>Sou reconhecida por ajudar mulheres a saírem da estagnação — principalmente dentro da dinâmica de Chamas Gêmeas, onde muitas se perdem esperando o outro… enquanto se abandonam.</p>
+<p>Sou reconhecida por tirar mulheres da estagnação — principalmente dentro da dinâmica de Chamas Gêmeas, onde muitas se perdem esperando o outro… enquanto se abandonam.</p>
 
-<p>Aqui, você vai encarar a sua própria verdade e, assim, encontrar direção, consciência e mudança de identidade.</p>
+<p>O meu trabalho não é sobre conforto. É sobre verdade, ruptura e reposicionamento.</p>
 
-<p>Porque, no final, é isso que muda tudo: <strong>quem você se torna.</strong></p>
+<p>Aqui, você não vai mais fugir de si mesma. Você vai encarar o que precisa ser visto, assumir sua energia e sustentar uma nova identidade.</p>
+
+<p>Porque no final, não é sobre ele. Não é sobre a história.</p>
+
+<p>👉 É sobre quem você se torna — e o que você finalmente passa a viver a partir disso.</p>
           </div>
         </div>
       </section>
