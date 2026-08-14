@@ -1,5 +1,7 @@
 import heroImage from './assets/images/hero-01.png'
 import deiseImage from './assets/images/foto.jpeg'
+import groupImage from '../context/referencias/imagem_grupo_chamas_gemeas.jpg'
+import groupQrCode from '../context/referencias/adobe-express-qr-code.png'
 import { useEffect, useState } from 'react'
 
 const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&mlu=0'
@@ -51,7 +53,15 @@ function ToAnswerSurvey({ className = '', onClick }) {
   )
 }
 
-function JoinWhatsappGroupButton({ className = '' }) {
+function JoinWhatsappGroupButton({ className = '', onClick }) {
+  if (onClick) {
+    return (
+      <button type="button" className={`join-button ${className}`} onClick={onClick}>
+        ENTRAR NO GRUPO OFICIAL DO WHATSAPP <ArrowIcon />
+      </button>
+    )
+  }
+
   return (
     <a
       className={`join-button ${className}`}
@@ -103,7 +113,7 @@ function RegistrationModal({ onClose, onStepTwoClick, formUrl, showStepTwo = fal
     </div>
   )
 }
-function RegistrationComplete({ onOpenForm }) {
+function RegistrationComplete({ onOpenForm, onOpenGroupPage }) {
   return (
     <main className="registration-complete">
       <div className="registration-complete__container">
@@ -126,10 +136,55 @@ function RegistrationComplete({ onOpenForm }) {
             materiais exclusivos:
           </h3>
 
-          <JoinWhatsappGroupButton />
+          <JoinWhatsappGroupButton onClick={onOpenGroupPage} />
         </section>
 
       </div>
+    </main>
+  )
+}
+
+function GroupAccessPage() {
+  const [copyMessage, setCopyMessage] = useState('Copiar o link do grupo')
+
+  const copyGroupLink = async () => {
+    try {
+      await navigator.clipboard.writeText(whatsAppUrl)
+    } catch {
+      const textArea = document.createElement('textarea')
+      textArea.value = whatsAppUrl
+      textArea.style.position = 'fixed'
+      textArea.style.opacity = '0'
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    }
+
+    setCopyMessage('Link copiado!')
+  }
+
+  return (
+    <main className="group-access">
+      <section className="group-access__container" aria-labelledby="group-access-title">
+        <img
+          className="group-access__image"
+          src={groupImage}
+          alt="Grupo Despertar da Missão Chamas Gêmeas"
+        />
+        <h1 id="group-access-title">🌞Despertar da Missão Chamas Gêmeas- Leia a descrição</h1>
+        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer">
+          Entrar
+        </a>
+        <button type="button" className="group-access__button" onClick={copyGroupLink}>
+          {copyMessage}
+        </button>
+        <p className="group-access__help">
+          Caso tenha problemas para entrar no grupo, abra o WhatsApp e cole o link em uma conversa.
+          <br />Em seguida, toque no link para abrir o convite diretamente no WhatsApp.
+        </p>
+        <img className="group-access__qr" src={groupQrCode} alt="QR Code para entrar no grupo do WhatsApp" />
+      </section>
     </main>
   )
 }
@@ -138,13 +193,15 @@ function RegistrationComplete({ onOpenForm }) {
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showThankYou, setShowThankYou] = useState(false)
+  const [showGroupPage, setShowGroupPage] = useState(false)
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false)
 
   useEffect(() => {
     const handlePopState = (event) => {
-      const isThankYouPage = event.state?.portalPage === 'thank-you'
+      const page = event.state?.portalPage
 
-      setShowThankYou(isThankYouPage)
+      setShowThankYou(page === 'thank-you')
+      setShowGroupPage(page === 'group-access')
       setIsModalOpen(false)
       setIsThankYouModalOpen(false)
     }
@@ -169,6 +226,21 @@ function App() {
     )
   }
 
+  const goToGroupPage = () => {
+    setIsThankYouModalOpen(false)
+    setShowThankYou(false)
+    setShowGroupPage(true)
+    window.history.pushState(
+      { ...window.history.state, portalPage: 'group-access' },
+      '',
+      window.location.href,
+    )
+  }
+
+  if (showGroupPage) {
+    return <GroupAccessPage />
+  }
+
   // if (isRegistrationComplete) {
   //   return <RegistrationComplete />
   // }
@@ -177,6 +249,7 @@ function App() {
       <>
         <RegistrationComplete
           onOpenForm={() => setIsThankYouModalOpen(true)}
+          onOpenGroupPage={goToGroupPage}
         />
 
         {isThankYouModalOpen && (
