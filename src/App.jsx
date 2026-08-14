@@ -1,6 +1,6 @@
 import heroImage from './assets/images/hero-01.png'
 import deiseImage from './assets/images/foto.jpeg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&mlu=0'
 
@@ -73,7 +73,7 @@ function FormButton({ className = '' }) {
   )
 }
 
-function RegistrationModal({ onClose, onStepTwoClick, formUrl }) {
+function RegistrationModal({ onClose, onStepTwoClick, formUrl, showStepTwo = false }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -99,10 +99,7 @@ function RegistrationModal({ onClose, onStepTwoClick, formUrl }) {
           Carregando…
         </iframe>
       </div>
-      <div>
-        {/* <StepTwoButton /> */}
-        <StepTwoButton onClick={onStepTwoClick} />
-      </div>
+      {showStepTwo && <StepTwoButton onClick={onStepTwoClick} />}
     </div>
   )
 }
@@ -142,7 +139,35 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showThankYou, setShowThankYou] = useState(false)
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false)
-  // const [isRegistrationComplete, setIsRegistrationComplete] = useState(false)
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const isThankYouPage = event.state?.portalPage === 'thank-you'
+
+      setShowThankYou(isThankYouPage)
+      setIsModalOpen(false)
+      setIsThankYouModalOpen(false)
+    }
+
+    window.history.replaceState(
+      { ...window.history.state, portalPage: 'landing' },
+      '',
+      window.location.href,
+    )
+    window.addEventListener('popstate', handlePopState)
+
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  const goToThankYouPage = () => {
+    setIsModalOpen(false)
+    setShowThankYou(true)
+    window.history.pushState(
+      { ...window.history.state, portalPage: 'thank-you' },
+      '',
+      window.location.href,
+    )
+  }
 
   // if (isRegistrationComplete) {
   //   return <RegistrationComplete />
@@ -333,8 +358,9 @@ function App() {
       {isModalOpen && (
         <RegistrationModal
           onClose={() => setIsModalOpen(false)}
-          onStepTwoClick={() => setShowThankYou(true)}
+          onStepTwoClick={goToThankYouPage}
           formUrl={urlFormPersonalData}
+          showStepTwo
         />
 
       )}
