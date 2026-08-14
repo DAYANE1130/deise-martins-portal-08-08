@@ -1,21 +1,69 @@
 import heroImage from './assets/images/hero-01.png'
 import deiseImage from './assets/images/foto.jpeg'
+import { useState } from 'react'
 
-const whatsAppUrl = 'https://chat.whatsapp.com/FR3kHLSGMfaILcm4Jy7z9m?mode=gi_t&utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnWUydri8jsjbROGO2ueWdcVrJmVZt6XUiVLoiPwYpI-pniZWK3k1PNixJKMo_aem_ePVMDXognQksoqLzMaiPhw'
+const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&mlu=0'
 
 const formVinculo = 'https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform'
+
+const urlFormPersonalData = 'https://docs.google.com/forms/d/e/1FAIpQLSfy2rSOtxtOAiw8zBn6US3rUTCyo_5fTeeSbkqk-Y9h7DYlwA/viewform?embedded=true';
+
+const urlFormSurvey =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfxQ3_qQVir_Pu7HGeoSJLfvGtIVDi73xd5AWw65_pgMIRE5Q/viewform?embedded=true'
+
 
 function ArrowIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
 }
 
-function JoinButton({ className = '' }) {
+
+function JoinButton({ className = '', onClick }) {
   return (
-    <a className={`join-button ${className}`} href={whatsAppUrl} target="_blank" rel="noreferrer">
-      Entrar no Grupo <ArrowIcon />
+    <button
+      type="button"
+      className={`join-button ${className}`}
+      onClick={onClick}
+    >
+      Garantir minha vaga gratuita <ArrowIcon />
+    </button>
+  )
+}
+function StepTwoButton({ className = '', onClick }) {
+  return (
+    <button
+      type="button"
+      className={`join-button ${className}`}
+      onClick={onClick}
+    >
+      Passo 2- Garantir minha vaga gratuita <ArrowIcon />
+    </button>
+  )
+}
+function ToAnswerSurvey({ className = '', onClick }) {
+  return (
+    <button
+      type="button"
+      className={`join-button ${className}`}
+      onClick={onClick}
+    >
+      RESPONDER A PESQUISA <ArrowIcon />
+    </button>
+  )
+}
+
+function JoinWhatsappGroupButton({ className = '' }) {
+  return (
+    <a
+      className={`join-button ${className}`}
+      href={whatsAppUrl}
+      target="_blank"
+      rel="noreferrer"
+    >
+      ENTRAR NO GRUPO OFICIAL DO WHATSAPP <ArrowIcon />
     </a>
   )
 }
+
 function FormButton({ className = '' }) {
   return (
     <a className={`join-button ${className}`} href={formVinculo} target="_blank" rel="noreferrer">
@@ -25,7 +73,100 @@ function FormButton({ className = '' }) {
   )
 }
 
+function RegistrationModal({ onClose, onStepTwoClick, formUrl }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulário de inscrição"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="modal__close"
+          onClick={onClose}
+          aria-label="Fechar formulário"
+        >
+          ×
+        </button>
+        <iframe
+          src={formUrl}
+          title="Formulário de inscrição"
+          className="modal__iframe"
+        >
+          Carregando…
+        </iframe>
+      </div>
+      <div>
+        {/* <StepTwoButton /> */}
+        <StepTwoButton onClick={onStepTwoClick} />
+      </div>
+    </div>
+  )
+}
+function RegistrationComplete({ onOpenForm }) {
+  return (
+    <main className="registration-complete">
+      <div className="registration-complete__container">
+
+        <h1>
+          Seu cadastro está <em>quase concluído.</em>
+        </h1>
+
+        <section className="registration-step">
+          <h3>
+            Passo 3: Responda a pesquisa abaixo:
+          </h3>
+
+          <ToAnswerSurvey onClick={onOpenForm} />
+        </section>
+
+        <section className="registration-step">
+          <h3>
+            Passo 4: Entre no Grupo para receber acesso às aulas e aos
+            materiais exclusivos:
+          </h3>
+
+          <JoinWhatsappGroupButton />
+        </section>
+
+      </div>
+    </main>
+  )
+}
+
+
 function App() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
+  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false)
+  // const [isRegistrationComplete, setIsRegistrationComplete] = useState(false)
+
+  // if (isRegistrationComplete) {
+  //   return <RegistrationComplete />
+  // }
+  if (showThankYou) {
+    return (
+      <>
+        <RegistrationComplete
+          onOpenForm={() => setIsThankYouModalOpen(true)}
+        />
+
+        {isThankYouModalOpen && (
+          // <div>
+          //   TESTE — MODAL DA PÁGINA DE OBRIGADO
+          // </div>
+          <RegistrationModal
+            onClose={() => setIsThankYouModalOpen(false)}
+            formUrl={urlFormSurvey}
+          />
+        )}
+      </>
+
+    )
+  }
   return (
     <main>
       <section className="hero" aria-labelledby="hero-title">
@@ -43,7 +184,8 @@ function App() {
               <div><dt>Formato</dt><dd>Online · Gratuito</dd></div>
             </dl>
             <div className="buttons">
-              <JoinButton />
+              {/* <JoinButton /> */}
+              <JoinButton onClick={() => setIsModalOpen(true)} />
               <FormButton />
             </div>
 
@@ -67,7 +209,8 @@ function App() {
           <p className="emphasis">É hora de se tornar quem vive a realidade que deseja.</p>
         </div>
         <div className="section_buttons">
-          <JoinButton />
+          {/* <JoinButton /> */}
+          <JoinButton onClick={() => setIsModalOpen(true)} />
           <FormButton />
         </div>
       </section>
@@ -131,17 +274,17 @@ function App() {
             <h2 id="about-title">Um chamado para alinhar-se à sua missão de vida</h2>
             <p>Eu sou Deise Martins, sacerdotisa, mestra espiritual formada em Letras pela PUC, terapeuta multidimensional, taróloga, terapeuta akáshica e reprogramadora emocional, especializada no caminho das Chamas Gêmeas.</p>
 
-<p>Atuo com leitura de campo, condução energética e a força da Deusa Hécate para revelar o que está oculto, romper bloqueios profundos e reposicionar você na frequência de realização, poder e materialização.</p>
+            <p>Atuo com leitura de campo, condução energética e a força da Deusa Hécate para revelar o que está oculto, romper bloqueios profundos e reposicionar você na frequência de realização, poder e materialização.</p>
 
-<p>Sou reconhecida por tirar mulheres da estagnação — principalmente dentro da dinâmica de Chamas Gêmeas, onde muitas se perdem esperando o outro… enquanto se abandonam.</p>
+            <p>Sou reconhecida por tirar mulheres da estagnação — principalmente dentro da dinâmica de Chamas Gêmeas, onde muitas se perdem esperando o outro… enquanto se abandonam.</p>
 
-<p>O meu trabalho não é sobre conforto. É sobre verdade, ruptura e reposicionamento.</p>
+            <p>O meu trabalho não é sobre conforto. É sobre verdade, ruptura e reposicionamento.</p>
 
-<p>Aqui, você não vai mais fugir de si mesma. Você vai encarar o que precisa ser visto, assumir sua energia e sustentar uma nova identidade.</p>
+            <p>Aqui, você não vai mais fugir de si mesma. Você vai encarar o que precisa ser visto, assumir sua energia e sustentar uma nova identidade.</p>
 
-<p>Porque no final, não é sobre ele. Não é sobre a história.</p>
+            <p>Porque no final, não é sobre ele. Não é sobre a história.</p>
 
-<p>👉 É sobre quem você se torna — e o que você finalmente passa a viver a partir disso.</p>
+            <p>👉 É sobre quem você se torna — e o que você finalmente passa a viver a partir disso.</p>
           </div>
         </div>
       </section>
@@ -157,7 +300,7 @@ function App() {
               Seus processos e palavras são sutis, mas têm um grande impacto na minha jornada de autodescoberta. Sempre que me sinto sem direção, agendo uma sessão, e com mágica, ela consegue desbloquear minha mente.
 
               Sou profundamente grata à Deise, não apenas como terapeuta, mas também pela conexão que construímos, mesmo que de forma virtual”</blockquote><figcaption>Maria Carolina</figcaption></figure>
-            
+
           </div>
         </div>
       </section>
@@ -187,6 +330,14 @@ function App() {
         </div>
       </section>
       <footer className="footer"><div className="container"><span>© 2026 Deise Martins. Todos os direitos reservados.</span><div><a href="https://www.instagram.com/deisemartins.portal/" target="_blank" rel="noreferrer">Instagram</a><a href="https://www.youtube.com/@deisemartins.portal" target="_blank" rel="noreferrer">YouTube</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform" target="_blank" rel="noreferrer">Confirmação de vínculo</a></div></div></footer>
+      {isModalOpen && (
+        <RegistrationModal
+          onClose={() => setIsModalOpen(false)}
+          onStepTwoClick={() => setShowThankYou(true)}
+          formUrl={urlFormPersonalData}
+        />
+
+      )}
     </main>
   )
 }

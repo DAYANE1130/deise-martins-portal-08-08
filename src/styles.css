@@ -65,3 +65,184 @@ h2 { margin: 0; color: #243460; font-family: Georgia, 'Times New Roman', serif; 
 .footer { padding: 24px 0; background: #202d50; color: #c7d2ed; font-size: .76rem; }.footer > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; }.footer a { margin-left: 15px; text-decoration: none; }.footer a:hover, .footer a:focus-visible { color: #fff; text-decoration: underline; }
 @media (min-width: 680px) { .cards--three { grid-template-columns: repeat(3, 1fr); }.testimonials { grid-template-columns: repeat(2, 1fr); }.section { padding: 110px 0; } }
 @media (min-width: 820px) { .split-copy { grid-template-columns: .85fr 1.15fr; gap: 100px; }.about { grid-template-columns: .75fr 1.25fr; gap: 80px; }.testimonials { grid-template-columns: repeat(3, 1fr); }.testimonials figure:nth-child(4) { grid-column: 1 / span 1; }.section-heading:not(.center) { margin-left: 0; } }
+
+/* MODAL*/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+  background: rgb(24 36 59 / 70%);
+}
+
+.modal {
+  position: relative;
+  width: min(680px, 100%);
+  max-height: 90svh;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 25px 70px rgb(24 36 59 / 30%);
+}
+
+.modal__iframe {
+  display: block;
+  width: 100%;
+  height: min(993px, 85svh);
+  border: 0;
+}
+
+.modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 15px rgb(24 36 59 / 18%);
+  color: #293966;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__close:hover {
+  background: #f4f6fb;
+}
+
+@media (max-width: 680px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal {
+    width: 100%;
+    max-height: 94svh;
+    border-radius: 16px;
+  }
+
+  .modal__iframe {
+    height: 90svh;
+  }
+
+  /*REGISTRATION COMPLETE*/
+  .registration-complete {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: linear-gradient(
+    145deg,
+    #fbfdff 0%,
+    #edf6ff 56%,
+    #f9f7ff 100%
+  );
+}
+
+.registration-complete__container {
+  width: min(760px, 100%);
+  padding: 50px 40px;
+  text-align: center;
+  background: rgb(255 255 255 / 85%);
+  border: 1px solid #dce5f5;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgb(40 65 126 / 12%);
+}
+
+.registration-complete h1 {
+  margin: 0 0 50px;
+  color: #1a2751;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.registration-complete h1 em {
+  color: #6c67bd;
+  font-style: italic;
+}
+
+.registration-step {
+  margin-top: 38px;
+}
+
+.registration-step h3 {
+  margin: 0 auto 22px;
+  max-width: 650px;
+  color: #354579;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.registration-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 26px;
+  border-radius: 999px;
+  background: #5f5bb2;
+  box-shadow: 0 14px 28px rgb(79 73 160 / 22%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.registration-button:hover,
+.registration-button:focus-visible {
+  background: #4f4b9b;
+  box-shadow: 0 18px 34px rgb(79 73 160 / 30%);
+  transform: translateY(-2px);
+}
+
+.registration-button:focus-visible {
+  outline: 3px solid #9bd2df;
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .registration-complete {
+    padding: 30px 15px;
+  }
+
+  .registration-complete__container {
+    padding: 40px 20px;
+  }
+
+  .registration-complete h1 {
+    margin-bottom: 40px;
+  }
+
+  .registration-button {
+    width: 100%;
+    padding: 12px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-button {
+    transition: none;
+  }
+}
+}
