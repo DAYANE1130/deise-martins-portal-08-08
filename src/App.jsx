@@ -8,10 +8,36 @@ const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&m
 
 const formVinculo = 'https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform'
 
-const urlFormPersonalData = 'https://docs.google.com/forms/d/e/1FAIpQLSfy2rSOtxtOAiw8zBn6US3rUTCyo_5fTeeSbkqk-Y9h7DYlwA/viewform?embedded=true';
+const personalDataEndpoint = 'https://script.google.com/macros/s/AKfycby5x11ROCBgp2xIFwhA62qHlLnYCgzreU21Qzu2Dh5mbIo_a1xgDW6EnXo8sxdv2y9OqA/exec'
+const surveyEndpoint = 'https://script.google.com/macros/s/AKfycbwmZ-lC8O63PwUUUWjC0o57SSxOY-ZRe7k-Wc8XX-8y2csazMTqxhK5t6sylSplO3zqvw/exec'
 
-const urlFormSurvey =
-  'https://docs.google.com/forms/d/e/1FAIpQLSfxQ3_qQVir_Pu7HGeoSJLfvGtIVDi73xd5AWw65_pgMIRE5Q/viewform?embedded=true'
+const surveyQuestions = [
+  {
+    name: 'motivoBusca',
+    question: 'O que fez você buscar uma ativação de portal neste momento?',
+    options: ['Sinto que é o momento de iniciar uma nova fase', 'Quero me reconectar com minha energia e propósito', 'Busco clareza para atravessar um momento de mudança'],
+  },
+  {
+    name: 'areaVida',
+    question: 'Qual área da sua vida você mais gostaria de transformar ou melhorar hoje?',
+    options: ['Relacionamentos e amor-próprio', 'Propósito, carreira e prosperidade', 'Equilíbrio emocional e bem-estar'],
+  },
+  {
+    name: 'experienciaTerapias',
+    question: 'Você já teve contato com terapias energéticas ou práticas integrativas?',
+    options: ['Sim, já faço ou já fiz acompanhamentos', 'Já tive algum contato, mas quero aprofundar', 'Ainda não, esta será minha primeira experiência'],
+  },
+  {
+    name: 'expectativa',
+    question: 'O que você espera encontrar em uma terapia energética?',
+    options: ['Mais clareza e autoconhecimento', 'Liberação de bloqueios e padrões repetitivos', 'Apoio para alinhar emoções, energia e escolhas'],
+  },
+  {
+    name: 'comoConheceu',
+    question: 'Como você conheceu o meu trabalho?',
+    options: ['Instagram ou outra rede social', 'Indicação de uma pessoa próxima', 'YouTube, evento ou pesquisa na internet'],
+  },
+]
 
 
 function ArrowIcon() {
@@ -82,15 +108,39 @@ function FormButton({ className = '' }) {
     </a>
   )
 }
+ 
 
-function RegistrationModal({ onClose, onStepTwoClick, formUrl, showStepTwo = false }) {
+async function submitForm(endpoint, payload) {
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify(payload),
+  });
+  // Para status 400/500
+  if (!response.ok) {
+    throw new Error(`Erro na requisição HTTP: Status ${response.status}`)
+  }
+
+  const data = await response.json();
+  // se flag sucess for false
+  if (data.sucess !== true) {
+    throw new Error(`Falha ao processar dados no servidor.`)
+  }
+  return data
+
+}
+
+function RegistrationModal({ onClose, onStepTwoClick, showStepTwo = false, children, ariaLabel }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal"
         role="dialog"
         aria-modal="true"
-        aria-label="Formulário de inscrição"
+        aria-label={ariaLabel}
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -101,16 +151,141 @@ function RegistrationModal({ onClose, onStepTwoClick, formUrl, showStepTwo = fal
         >
           ×
         </button>
-        <iframe
-          src={formUrl}
-          title="Formulário de inscrição"
-          className="modal__iframe"
-        >
-          Carregando…
-        </iframe>
+        <div className="modal__content">{children}</div>
       </div>
       {showStepTwo && <StepTwoButton onClick={onStepTwoClick} />}
     </div>
+  )
+}
+
+function PersonalDataForm() {
+  const [values, setValues] = useState({ nome: '', email: '', telefone: '' })
+  const [status, setStatus] = useState('idle')
+  const [message, setMessage] = useState('')
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setValues((currentValues) => ({ ...currentValues, [name]: value }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // 1. Sanitização dos dados
+    const nome = values.nome.trim().replace(/\s+/g, ' ');
+    const email = values.email.trim();
+    const telefone = values.telefone.trim().replace(/\s+/g, ' ');
+    const telefoneNumeros = telefone.replace(/\D/g, '');
+
+    // 2. Validações de Front-end
+    if (!nome || !email || !telefone) {
+      setStatus('error');
+      setMessage('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus('error');
+      setMessage('Informe um e-mail válido.');
+      return;
+    }
+
+    if (!/^[\d\s()+-]+$/.test(telefone) || ![10, 11].includes(telefoneNumeros.length)) {
+      setStatus('error');
+      setMessage('Informe um telefone válido com DDD.');
+      return;
+    }
+
+    setMessage('');
+try {
+  setStatus('loading');
+  
+  await submitForm(personalDataEndpoint, { nome, email, telefone });
+
+  setStatus('success');
+  setMessage('Dados enviados com sucesso! Agora siga para o passo 2.');
+
+} catch (error) {
+  console.error('Erro capturado pelo catch:', error.message);
+  setStatus('error');
+  setMessage('Não foi possível enviar agora. Tente novamente em instantes.');
+}
+   
+  };
+
+  return (
+    <form className="portal-form" onSubmit={handleSubmit} noValidate>
+      <h2>Garanta sua vaga</h2>
+      <p className="portal-form__intro">Preencha seus dados para participar da ativação.</p>
+      <label className="portal-form__field" htmlFor="nome">Nome
+        <input id="nome" name="nome" type="text" autoComplete="name" placeholder="exemplo: Lana Silva" value={values.nome} onChange={handleChange} disabled={status === 'loading'} required />
+      </label>
+      <label className="portal-form__field" htmlFor="email">E-mail
+        <input id="email" name="email" type="email" autoComplete="email" placeholder="exemplo: email@email.com" value={values.email} onChange={handleChange} disabled={status === 'loading'} required />
+      </label>
+      <label className="portal-form__field" htmlFor="telefone">Telefone com DDD
+        <input id="telefone" name="telefone" type="tel" inputMode="tel" autoComplete="tel" placeholder="exemplo: (00) 00000-0000" maxLength={13} value={values.telefone} onChange={handleChange} disabled={status === 'loading'} required />
+      </label>
+      <p className={`portal-form__message portal-form__message--${status}`} role="status" aria-live="polite">{message}</p>
+      <button className="portal-form__submit" type="submit" disabled={status === 'loading'}>
+        {status === 'loading' ? 'Enviando…' : 'Enviar dados'}
+      </button>
+    </form>
+  )
+}
+
+function SurveyForm() {
+  const [answers, setAnswers] = useState({})
+  const [status, setStatus] = useState('idle')
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const payload = Object.fromEntries(
+      surveyQuestions.map(({ name }) => [name, (answers[name] || '').trim()]),
+    )
+
+    if (Object.values(payload).some((answer) => !answer)) {
+      setStatus('error')
+      setMessage('Responda todas as perguntas para enviar a pesquisa.')
+      return
+    }
+
+  
+    setMessage('')
+
+    try {
+      setStatus('loading')
+      await submitForm(surveyEndpoint, payload)
+      setStatus('success')
+      setMessage('Pesquisa enviada com sucesso. Obrigada por compartilhar!')
+    } catch (error){
+      console.error('Erro capturado pelo catch:', error.message);
+      setStatus('error')
+      setMessage('Não foi possível enviar agora. Tente novamente em instantes.')
+    }
+  }
+
+  return (
+    <form className="portal-form portal-form--survey" onSubmit={handleSubmit} noValidate>
+      <h2>Pesquisa rápida</h2>
+      <p className="portal-form__intro">Suas respostas ajudam a tornar essa jornada mais alinhada a você.</p>
+      {surveyQuestions.map(({ name, question, options }) => (
+        <fieldset className="portal-form__question" key={name} disabled={status === 'loading'}>
+          <legend>{question}</legend>
+          {options.map((option) => (
+            <label className="portal-form__option" key={option}>
+              <input type="radio" name={name} value={option} checked={answers[name] === option} onChange={() => setAnswers((currentAnswers) => ({ ...currentAnswers, [name]: option }))} required />
+              <span>{option}</span>
+            </label>
+          ))}
+        </fieldset>
+      ))}
+      <p className={`portal-form__message portal-form__message--${status}`} role="status" aria-live="polite">{message}</p>
+      <button className="portal-form__submit" type="submit" disabled={status === 'loading'}>
+        {status === 'loading' ? 'Enviando…' : 'Enviar pesquisa'}
+      </button>
+    </form>
   )
 }
 function RegistrationComplete({ onOpenForm, onOpenGroupPage }) {
@@ -124,7 +299,7 @@ function RegistrationComplete({ onOpenForm, onOpenGroupPage }) {
 
         <section className="registration-step">
           <h3>
-            Passo 3: Responda a pesquisa abaixo:
+            Passo 3: Enquanto isso, responda minha pesquisa para personalizarmos a sua experiência (Leva menos de 1 minuto):
           </h3>
 
           <ToAnswerSurvey onClick={onOpenForm} />
@@ -241,9 +416,7 @@ function App() {
     return <GroupAccessPage />
   }
 
-  // if (isRegistrationComplete) {
-  //   return <RegistrationComplete />
-  // }
+
   if (showThankYou) {
     return (
       <>
@@ -253,13 +426,13 @@ function App() {
         />
 
         {isThankYouModalOpen && (
-          // <div>
-          //   TESTE — MODAL DA PÁGINA DE OBRIGADO
-          // </div>
+         
           <RegistrationModal
             onClose={() => setIsThankYouModalOpen(false)}
-            formUrl={urlFormSurvey}
-          />
+            ariaLabel="Pesquisa de terapias energéticas"
+          >
+            <SurveyForm />
+          </RegistrationModal>
         )}
       </>
 
@@ -331,7 +504,7 @@ function App() {
           <p className="center emphasis section-close">Você não vive a união sendo a mesma pessoa.</p>
           <div className="center">
             <div className="section_buttons">
-              <JoinButton />
+              <JoinButton onClick={() => setIsModalOpen(true)} />
               <FormButton />
             </div>
           </div>
@@ -346,7 +519,7 @@ function App() {
             <p>Se você ainda sente que falta amor, resposta ou validação, você ainda está criando a partir da ausência.</p>
             <p className="emphasis">E a realidade sempre responde a isso.</p>
             <div className="buttons">
-              <JoinButton />
+              <JoinButton onClick={() => setIsModalOpen(true)}/>
               <FormButton />
             </div>
           </div>
@@ -410,7 +583,7 @@ function App() {
           <div className="ritual__details"><p><strong>Data</strong>08/08</p><p><strong>Horário</strong>08:08</p><p><strong>Formato</strong>Online</p><p><strong>Evento</strong>Gratuito</p></div>
           <p>O acesso é liberado através do grupo fechado.</p>
           <div className="section_buttons" >
-            <JoinButton />
+            <JoinButton onClick={() => setIsModalOpen(true)} />
             <FormButton />
           </div>
         </div>
@@ -422,7 +595,7 @@ function App() {
           <h2 id="final-title">A união começa quando a separação termina dentro de você.</h2>
           <p>Se você sente que esse chamado é pra você, entre no grupo e participe da ativação do Portal 08/08.</p>
           <div className="section_buttons">
-            <JoinButton />
+            <JoinButton onClick={() => setIsModalOpen(true)}/>
             <FormButton />
           </div>
         </div>
@@ -432,9 +605,11 @@ function App() {
         <RegistrationModal
           onClose={() => setIsModalOpen(false)}
           onStepTwoClick={goToThankYouPage}
-          formUrl={urlFormPersonalData}
           showStepTwo
-        />
+          ariaLabel="Formulário de dados pessoais"
+        >
+          <PersonalDataForm />
+        </RegistrationModal>
 
       )}
     </main>
