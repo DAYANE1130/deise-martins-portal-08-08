@@ -3,6 +3,7 @@ import deiseImage from './assets/images/foto.jpeg'
 import groupImage from '../context/referencias/imagem_grupo_chamas_gemeas.jpg'
 import groupQrCode from '../context/referencias/adobe-express-qr-code.png'
 import { useEffect, useState } from 'react'
+import { trackEvent } from './analytics'
 
 const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&mlu=0'
 
@@ -10,6 +11,17 @@ const formVinculo = 'https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvs
 
 const personalDataEndpoint = 'https://script.google.com/macros/s/AKfycby5x11ROCBgp2xIFwhA62qHlLnYCgzreU21Qzu2Dh5mbIo_a1xgDW6EnXo8sxdv2y9OqA/exec'
 const surveyEndpoint = 'https://script.google.com/macros/s/AKfycbwmZ-lC8O63PwUUUWjC0o57SSxOY-ZRe7k-Wc8XX-8y2csazMTqxhK5t6sylSplO3zqvw/exec'
+
+function getLeadOrigin() {
+  const source = new URLSearchParams(window.location.search).get('utm_source')?.trim()
+  const normalizedSource = source?.toLowerCase()
+
+  if (normalizedSource === 'instagram') return 'Instagram'
+  if (normalizedSource === 'youtube') return 'YouTube'
+  if (!source) return 'Direto'
+
+  return source
+}
 
 const surveyQuestions = [
   {
@@ -200,13 +212,13 @@ function PersonalDataForm() {
 try {
   setStatus('loading');
   
-  await submitForm(personalDataEndpoint, { nome, email, telefone });
+  await submitForm(personalDataEndpoint, { nome, email, telefone, origem: getLeadOrigin() });
 
   setStatus('success');
   setMessage('Dados enviados com sucesso! Agora siga para o passo 2.');
+  trackEvent('personal_data_form_submit')
 
-} catch (error) {
-  console.error('Erro capturado pelo catch:', error.message);
+} catch {
   setStatus('error');
   setMessage('Não foi possível enviar agora. Tente novamente em instantes.');
 }
@@ -259,8 +271,8 @@ function SurveyForm() {
       await submitForm(surveyEndpoint, payload)
       setStatus('success')
       setMessage('Pesquisa enviada com sucesso. Obrigada por compartilhar!')
-    } catch (error){
-      console.error('Erro capturado pelo catch:', error.message);
+      trackEvent('survey_form_submit')
+    } catch {
       setStatus('error')
       setMessage('Não foi possível enviar agora. Tente novamente em instantes.')
     }
@@ -348,7 +360,7 @@ function GroupAccessPage() {
           alt="Grupo Despertar da Missão Chamas Gêmeas"
         />
         <h1 id="group-access-title">🌞Despertar da Missão Chamas Gêmeas- Leia a descrição</h1>
-        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer">
+        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent('whatsapp_group_click')}>
           Entrar
         </a>
         <button type="button" className="group-access__button" onClick={copyGroupLink}>
