@@ -1,39 +1,41 @@
 import ReactGA from 'react-ga4'
 
-const measurementId = 'G-ERECX3279E'
+const MEASUREMENT_ID = 'G-ERECX3279E'
 
 export function initializeAnalytics() {
-  ReactGA.initialize(measurementId)
+  ReactGA.initialize(MEASUREMENT_ID)
 }
 
-// export function trackEvent(eventName) {
-//   ReactGA.event(eventName)
-// }
 
+const EVENT_CONFIG = {
+  personal_data_form_submit: {
+    action: 'cadastro_dados_pessoais',
+    category: 'Formulário Dados Pessoais'
+  },
+  survey_form_submit: {
+    action: 'envio_pesquisa',
+    category: 'Formulário de Pesquisa'
+  },
+  whatsapp_group_click: {
+    action: 'clique_whatsapp',
+    category: 'Grupo do WhatsApp'
+  }
+}
 
 export function trackEvent(eventName, params = {}) {
-  let nameCategory = ''
-
-  if (eventName === "personal_data_form_submit") {
-    nameCategory = 'Formulário dados pessoais'
-  } else if (eventName === "survey_form_submit") {
-    nameCategory = 'Formulário de pesquisa'
-  } else if (eventName === "whatsapp_group_click") {
-    nameCategory = 'Clique para entrar no grupo whatsapp '
+  const config = EVENT_CONFIG[eventName] || {
+    action: eventName,
+    category: 'Geral'
   }
-  // Captura as UTMs diretamente da URL do navegador no momento do evento
+
   const urlParams = new URLSearchParams(window.location.search)
-  const utmSource = urlParams.get('utm_source') || 'direto'
-  const utmMedium = urlParams.get('utm_medium') || 'nenhum'
-  const utmCampaign = urlParams.get('utm_campaign') || 'nenhuma'
 
   ReactGA.event({
-    action: eventName,       // Nome do evento (ex: 'personal_data_form_submit')
-    category: nameCategory,  // Categoria para organização
-    page_location: window.location.href,
-    source: utmSource,
-    medium: utmMedium,
-    campaign: utmCampaign,
-    ...params
+    action: config.action,
+    category: config.category,
+    utm_source: urlParams.get('utm_source') || 'direto',
+    utm_medium: urlParams.get('utm_medium') || 'nenhum',
+    utm_campaign: urlParams.get('utm_campaign') || 'nenhuma',
+    ...params,
   })
 }

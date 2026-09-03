@@ -137,7 +137,6 @@ async function submitForm(endpoint, payload) {
   }
 
   const data = await response.json();
-  // se flag sucess for false
   if (data.sucess !== true) {
     throw new Error(`Falha ao processar dados no servidor.`)
   }
