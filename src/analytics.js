@@ -5,7 +5,11 @@ const MEASUREMENT_ID = 'G-ERECX3279E'
 export function initializeAnalytics() {
   ReactGA.initialize(MEASUREMENT_ID)
 }
-
+/**
+ * Dispara eventos customizados para o GA4 para o formulário de pesquisa.
+ * @param {string} eventName - Nome do evento ('survey_form_submit')
+ * @param {Object} params - Objeto com os parâmetros adicionais (respostas do formulário)
+ */
 
 const EVENT_CONFIG = {
   personal_data_form_submit: {
@@ -36,6 +40,7 @@ export function trackEvent(eventName, params = {}) {
     utm_source: urlParams.get('utm_source') || 'direto',
     utm_medium: urlParams.get('utm_medium') || 'nenhum',
     utm_campaign: urlParams.get('utm_campaign') || 'nenhuma',
+    debug_mode: true,
     ...params,
   })
 }

@@ -11,6 +11,7 @@ const formVinculo = 'https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvs
 
 const personalDataEndpoint = 'https://script.google.com/macros/s/AKfycby5x11ROCBgp2xIFwhA62qHlLnYCgzreU21Qzu2Dh5mbIo_a1xgDW6EnXo8sxdv2y9OqA/exec'
 const surveyEndpoint = 'https://script.google.com/macros/s/AKfycbwmZ-lC8O63PwUUUWjC0o57SSxOY-ZRe7k-Wc8XX-8y2csazMTqxhK5t6sylSplO3zqvw/exec'
+const leadSessionKey = 'portalLeadNumber'
 
 function getLeadOrigin() {
   const source = new URLSearchParams(window.location.search).get('utm_source')?.trim()
@@ -23,7 +24,42 @@ function getLeadOrigin() {
   return source
 }
 
+function saveLeadNumber(id) {
+  if (!Number.isInteger(Number(id))) {
+    throw new Error('ID do lead inválido.')
+  }
+
+  sessionStorage.setItem(leadSessionKey, String(id))
+}
+
+async function updateLeadAction(evento) {
+  const id = sessionStorage.getItem(leadSessionKey)
+
+  if (!Number.isInteger(Number(id))) return
+
+  try {
+    await submitForm(personalDataEndpoint, { id: Number(id), evento })
+  } catch (error) {
+    console.error('Falha ao atualizar evento do lead:', error)
+  }
+}
+
 const surveyQuestions = [
+  {
+    name: 'genero',
+    question: 'Com qual gênero você se identifica?',
+    options: ['Feminino', 'Masculino', 'Não-binário / Outro', 'Prefiro não informar'],
+  },
+  {
+    name: 'faixaEtaria',
+    question: 'Qual é a sua faixa etária?',
+    options: ['18 a 24 anos', '25 a 34 anos', '35 a 44 anos', '45 a 54 anos', '55 anos ou mais'],
+  },
+  {
+    name: 'profissao',
+    question: 'Qual é a sua área de atuação ou profissão?',
+    options: ['Saúde e Bem-estar', 'Tecnologia e Engenharia', 'Educação e Humanas', 'Negócios, Vendas e Finanças', 'Artes, Design e Comunicação', 'Outra / Autônomo(a)'],
+  },
   {
     name: 'motivoBusca',
     question: 'O que fez você buscar uma ativação de portal neste momento?',
@@ -65,17 +101,6 @@ function JoinButton({ className = '', onClick }) {
       onClick={onClick}
     >
       Garantir minha vaga gratuita <ArrowIcon />
-    </button>
-  )
-}
-function StepTwoButton({ className = '', onClick }) {
-  return (
-    <button
-      type="button"
-      className={`join-button ${className}`}
-      onClick={onClick}
-    >
-      Passo 2- Garantir minha vaga gratuita <ArrowIcon />
     </button>
   )
 }
@@ -137,6 +162,7 @@ async function submitForm(endpoint, payload) {
   }
 
   const data = await response.json();
+  console.log('EU SOPU RESPONDE',response)
   if (data.sucess !== true) {
     throw new Error(`Falha ao processar dados no servidor.`)
   }
@@ -144,7 +170,7 @@ async function submitForm(endpoint, payload) {
 
 }
 
-function RegistrationModal({ onClose, onStepTwoClick, showStepTwo = false, children, ariaLabel }) {
+function RegistrationModal({ onClose, children, ariaLabel }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -164,15 +190,28 @@ function RegistrationModal({ onClose, onStepTwoClick, showStepTwo = false, child
         </button>
         <div className="modal__content">{children}</div>
       </div>
-      {showStepTwo && <StepTwoButton onClick={onStepTwoClick} />}
     </div>
   )
 }
 
-function PersonalDataForm() {
+function PersonalDataForm({ onSuccess }) {
   const [values, setValues] = useState({ nome: '', email: '', telefone: '' })
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
+
+  const isFormValid = (() => {
+    const nome = values.nome.trim()
+    const email = values.email.trim()
+    const telefone = values.telefone.trim()
+    const telefoneNumeros = telefone.replace(/\D/g, '')
+
+    return Boolean(
+      nome
+      && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      && /^[\d\s()+-]+$/.test(telefone)
+      && [10, 11].includes(telefoneNumeros.length),
+    )
+  })()
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -211,11 +250,13 @@ function PersonalDataForm() {
 try {
   setStatus('loading');
   
-  await submitForm(personalDataEndpoint, { nome, email, telefone, origem: getLeadOrigin() });
-
+  const response = await submitForm(personalDataEndpoint, { nome, email, telefone, origem: getLeadOrigin() });
+  console.log('EU SOPU RESPONDE',response)
+  saveLeadNumber(response.id)
   setStatus('success');
   setMessage('Dados enviados com sucesso! Agora siga para o passo 2.');
   trackEvent('personal_data_form_submit')
+  onSuccess()
 
 } catch {
   setStatus('error');
@@ -238,8 +279,8 @@ try {
         <input id="telefone" name="telefone" type="tel" inputMode="tel" autoComplete="tel" placeholder="exemplo: (00) 00000-0000" maxLength={13} value={values.telefone} onChange={handleChange} disabled={status === 'loading'} required />
       </label>
       <p className={`portal-form__message portal-form__message--${status}`} role="status" aria-live="polite">{message}</p>
-      <button className="portal-form__submit" type="submit" disabled={status === 'loading'}>
-        {status === 'loading' ? 'Enviando…' : 'Enviar dados'}
+      <button className="portal-form__submit" type="submit" disabled={status === 'loading' || !isFormValid}>
+        {status === 'loading' ? 'Enviando…' : 'GARANTIR MINHA VAGA'}
       </button>
     </form>
   )
@@ -270,7 +311,8 @@ function SurveyForm() {
       await submitForm(surveyEndpoint, payload)
       setStatus('success')
       setMessage('Pesquisa enviada com sucesso. Obrigada por compartilhar!')
-      trackEvent('survey_form_submit')
+      trackEvent('survey_form_submit', payload)
+      void updateLeadAction('pesquisa')
     } catch {
       setStatus('error')
       setMessage('Não foi possível enviar agora. Tente novamente em instantes.')
@@ -359,7 +401,7 @@ function GroupAccessPage() {
           alt="Grupo Despertar da Missão Chamas Gêmeas"
         />
         <h1 id="group-access-title">🌞Despertar da Missão Chamas Gêmeas- Leia a descrição</h1>
-        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent('whatsapp_group_click')}>
+        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer" onClick={() => { trackEvent('whatsapp_group_click'); void updateLeadAction('whatsapp') }}>
           Entrar
         </a>
         <button type="button" className="group-access__button" onClick={copyGroupLink}>
@@ -615,11 +657,9 @@ function App() {
       {isModalOpen && (
         <RegistrationModal
           onClose={() => setIsModalOpen(false)}
-          onStepTwoClick={goToThankYouPage}
-          showStepTwo
           ariaLabel="Formulário de dados pessoais"
         >
-          <PersonalDataForm />
+          <PersonalDataForm onSuccess={goToThankYouPage} />
         </RegistrationModal>
 
       )}
