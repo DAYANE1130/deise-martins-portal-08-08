@@ -4,10 +4,9 @@ import groupImage from '../context/referencias/imagem_grupo_chamas_gemeas.jpg'
 import groupQrCode from '../context/referencias/adobe-express-qr-code.png'
 import { useEffect, useState } from 'react'
 import { trackEvent } from './analytics'
+import { surveyQuestions } from './utils/surveyQuestions'
 
 const whatsAppUrl = 'https://chat.whatsapp.com/I9xVLgi9G7Z3IFhxq4HdAz?s=cl&p=i&mlu=0'
-
-const formVinculo = 'https://docs.google.com/forms/d/e/1FAIpQLSdMBmVtuOD6UIkjvvsDkWGQHI_Fu9NIWQAPWS2q1rBYCBy5fw/viewform'
 
 const personalDataEndpoint = 'https://script.google.com/macros/s/AKfycby5x11ROCBgp2xIFwhA62qHlLnYCgzreU21Qzu2Dh5mbIo_a1xgDW6EnXo8sxdv2y9OqA/exec'
 const surveyEndpoint = 'https://script.google.com/macros/s/AKfycbwmZ-lC8O63PwUUUWjC0o57SSxOY-ZRe7k-Wc8XX-8y2csazMTqxhK5t6sylSplO3zqvw/exec'
@@ -25,11 +24,19 @@ function getLeadOrigin() {
 }
 
 function saveLeadNumber(id) {
-  if (!Number.isInteger(Number(id))) {
-    throw new Error('ID do lead inválido.')
-  }
+  try {
+    const parsedId = Number(id)
 
-  sessionStorage.setItem(leadSessionKey, String(id))
+    if (!Number.isInteger(parsedId) || parsedId <= 0) {
+      console.warn('ID do lead inválido para armazenamento:', id)
+      return
+    }
+
+    sessionStorage.setItem(leadSessionKey, String(parsedId))
+  } catch (error) {
+    // Captura erros de cota do sessionStorage ou acesso negado pelo navegador
+    console.error('Falha ao salvar o ID do lead no sessionStorage:', error)
+  }
 }
 
 async function updateLeadAction(evento) {
@@ -44,48 +51,7 @@ async function updateLeadAction(evento) {
   }
 }
 
-const surveyQuestions = [
-  {
-    name: 'genero',
-    question: 'Com qual gênero você se identifica?',
-    options: ['Feminino', 'Masculino', 'Não-binário / Outro', 'Prefiro não informar'],
-  },
-  {
-    name: 'faixaEtaria',
-    question: 'Qual é a sua faixa etária?',
-    options: ['18 a 24 anos', '25 a 34 anos', '35 a 44 anos', '45 a 54 anos', '55 anos ou mais'],
-  },
-  {
-    name: 'profissao',
-    question: 'Qual é a sua área de atuação ou profissão?',
-    options: ['Saúde e Bem-estar', 'Tecnologia e Engenharia', 'Educação e Humanas', 'Negócios, Vendas e Finanças', 'Artes, Design e Comunicação', 'Outra / Autônomo(a)'],
-  },
-  {
-    name: 'motivoBusca',
-    question: 'O que fez você buscar uma ativação de portal neste momento?',
-    options: ['Sinto que é o momento de iniciar uma nova fase', 'Quero me reconectar com minha energia e propósito', 'Busco clareza para atravessar um momento de mudança'],
-  },
-  {
-    name: 'areaVida',
-    question: 'Qual área da sua vida você mais gostaria de transformar ou melhorar hoje?',
-    options: ['Relacionamentos e amor-próprio', 'Propósito, carreira e prosperidade', 'Equilíbrio emocional e bem-estar'],
-  },
-  {
-    name: 'experienciaTerapias',
-    question: 'Você já teve contato com terapias energéticas ou práticas integrativas?',
-    options: ['Sim, já faço ou já fiz acompanhamentos', 'Já tive algum contato, mas quero aprofundar', 'Ainda não, esta será minha primeira experiência'],
-  },
-  {
-    name: 'expectativa',
-    question: 'O que você espera encontrar em uma terapia energética?',
-    options: ['Mais clareza e autoconhecimento', 'Liberação de bloqueios e padrões repetitivos', 'Apoio para alinhar emoções, energia e escolhas'],
-  },
-  {
-    name: 'comoConheceu',
-    question: 'Como você conheceu o meu trabalho?',
-    options: ['Instagram ou outra rede social', 'Indicação de uma pessoa próxima', 'YouTube, evento ou pesquisa na internet'],
-  },
-]
+
 
 
 function ArrowIcon() {
@@ -119,7 +85,15 @@ function ToAnswerSurvey({ className = '', onClick }) {
 function JoinWhatsappGroupButton({ className = '', onClick }) {
   if (onClick) {
     return (
-      <button type="button" className={`join-button ${className}`} onClick={onClick}>
+      <button
+        type="button"
+        className={`join-button ${className}`}
+        onClick={() => {
+          trackEvent('whatsapp_group_click')
+          void updateLeadAction('whatsapp')
+          onClick()
+        }}
+      >
         ENTRAR NO GRUPO OFICIAL DO WHATSAPP <ArrowIcon />
       </button>
     )
@@ -137,16 +111,6 @@ function JoinWhatsappGroupButton({ className = '', onClick }) {
   )
 }
 
-function FormButton({ className = '' }) {
-  return (
-    <a className={`join-button ${className}`} href={formVinculo} target="_blank" rel="noreferrer">
-      Fazer confirmação de vínculo
-      <ArrowIcon />
-    </a>
-  )
-}
- 
-
 async function submitForm(endpoint, payload) {
 
   const response = await fetch(endpoint, {
@@ -162,7 +126,8 @@ async function submitForm(endpoint, payload) {
   }
 
   const data = await response.json();
-  console.log('EU SOPU RESPONDE',response)
+  console.log('EU sou resposta do FETCH',data)
+   console.log('EU sou resposta do FETCH DATA.SUCESS',data.sucess)
   if (data.sucess !== true) {
     throw new Error(`Falha ao processar dados no servidor.`)
   }
@@ -170,11 +135,11 @@ async function submitForm(endpoint, payload) {
 
 }
 
-function RegistrationModal({ onClose, children, ariaLabel }) {
+function RegistrationModal({ onClose, children, ariaLabel, showFloatingClose = false }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal"
+        className={`modal${showFloatingClose ? ' modal--with-floating-close' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
@@ -189,6 +154,16 @@ function RegistrationModal({ onClose, children, ariaLabel }) {
           ×
         </button>
         <div className="modal__content">{children}</div>
+        {showFloatingClose && (
+          <button
+            type="button"
+            className="modal__floating-close"
+            onClick={onClose}
+            aria-label="Fechar pesquisa"
+          >
+            ×
+          </button>
+        )}
       </div>
     </div>
   )
@@ -254,11 +229,12 @@ try {
   console.log('EU SOPU RESPONDE',response)
   saveLeadNumber(response.id)
   setStatus('success');
-  setMessage('Dados enviados com sucesso! Agora siga para o passo 2.');
+  setMessage('Muito obrigada! Agora siga para o passo 2.');
   trackEvent('personal_data_form_submit')
   onSuccess()
 
-} catch {
+} catch(error) {
+  console.error('Erro na submissão do formulário:', error)
   setStatus('error');
   setMessage('Não foi possível enviar agora. Tente novamente em instantes.');
 }
@@ -310,7 +286,8 @@ function SurveyForm() {
       setStatus('loading')
       await submitForm(surveyEndpoint, payload)
       setStatus('success')
-      setMessage('Pesquisa enviada com sucesso. Obrigada por compartilhar!')
+      setMessage('Obrigada por compartilhar! \nFeche a página no botão abaixo e siga para o último passo.')
+        console.log('ENTREI NO TRACK DaA PESQUISA', payload)
       trackEvent('survey_form_submit', payload)
       void updateLeadAction('pesquisa')
     } catch {
@@ -352,7 +329,7 @@ function RegistrationComplete({ onOpenForm, onOpenGroupPage }) {
 
         <section className="registration-step">
           <h3>
-            Passo 3: Enquanto isso, responda minha pesquisa para personalizarmos a sua experiência (Leva menos de 1 minuto):
+            Passo 2: Enquanto isso, responda minha pesquisa para personalizarmos a sua experiência (Leva menos de 1 minuto):
           </h3>
 
           <ToAnswerSurvey onClick={onOpenForm} />
@@ -360,7 +337,7 @@ function RegistrationComplete({ onOpenForm, onOpenGroupPage }) {
 
         <section className="registration-step">
           <h3>
-            Passo 4: Entre no Grupo para receber acesso às aulas e aos
+            Passo 3: Entre no Grupo para receber acesso às aulas e aos
             materiais exclusivos:
           </h3>
 
@@ -401,7 +378,7 @@ function GroupAccessPage() {
           alt="Grupo Despertar da Missão Chamas Gêmeas"
         />
         <h1 id="group-access-title">🌞Despertar da Missão Chamas Gêmeas- Leia a descrição</h1>
-        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer" onClick={() => { trackEvent('whatsapp_group_click'); void updateLeadAction('whatsapp') }}>
+        <a className="group-access__button group-access__button--primary" href={whatsAppUrl} target="_blank" rel="noreferrer">
           Entrar
         </a>
         <button type="button" className="group-access__button" onClick={copyGroupLink}>
@@ -483,6 +460,7 @@ function App() {
           <RegistrationModal
             onClose={() => setIsThankYouModalOpen(false)}
             ariaLabel="Pesquisa de terapias energéticas"
+            showFloatingClose
           >
             <SurveyForm />
           </RegistrationModal>
@@ -510,7 +488,7 @@ function App() {
             <div className="buttons">
               {/* <JoinButton /> */}
               <JoinButton onClick={() => setIsModalOpen(true)} />
-              <FormButton />
+  
             </div>
 
             <strong className="hero__note">O acesso é liberado através do grupo fechado.</strong>
@@ -535,7 +513,7 @@ function App() {
         <div className="section_buttons">
           {/* <JoinButton /> */}
           <JoinButton onClick={() => setIsModalOpen(true)} />
-          <FormButton />
+         
         </div>
       </section>
 
@@ -558,7 +536,7 @@ function App() {
           <div className="center">
             <div className="section_buttons">
               <JoinButton onClick={() => setIsModalOpen(true)} />
-              <FormButton />
+              
             </div>
           </div>
         </div>
@@ -573,7 +551,7 @@ function App() {
             <p className="emphasis">E a realidade sempre responde a isso.</p>
             <div className="buttons">
               <JoinButton onClick={() => setIsModalOpen(true)}/>
-              <FormButton />
+             
             </div>
           </div>
         </div>
@@ -637,7 +615,7 @@ function App() {
           <p>O acesso é liberado através do grupo fechado.</p>
           <div className="section_buttons" >
             <JoinButton onClick={() => setIsModalOpen(true)} />
-            <FormButton />
+           
           </div>
         </div>
       </section>
@@ -649,7 +627,7 @@ function App() {
           <p>Se você sente que esse chamado é pra você, entre no grupo e participe da ativação do Portal 08/08.</p>
           <div className="section_buttons">
             <JoinButton onClick={() => setIsModalOpen(true)}/>
-            <FormButton />
+            
           </div>
         </div>
       </section>

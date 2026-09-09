@@ -27,11 +27,28 @@ const EVENT_CONFIG = {
 }
 
 export function trackEvent(eventName, params = {}) {
+
   const config = EVENT_CONFIG[eventName] || {
     action: eventName,
     category: 'Geral'
   }
+  // Sanitização dos parâmetros para o padrão aceito pelo GA4
+  const sanitizedParams = Object.entries(params).reduce((acc, [key, value]) => {
+    // 1. Converte a chave para snake_case limpo
+    const cleanKey = key
+      .replace(/([a-z])([A-Z])/g, '$1_$2')
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '')
 
+    // 2. Trata e limita o valor a 40 caracteres (regra estrita do GA4)
+    const cleanValue = typeof value === 'string' 
+      ? value.trim().substring(0, 40) 
+      : value
+
+    acc[cleanKey] = cleanValue
+    return acc
+  }, {})
+ console.log('ENTREI NO GA4', eventName, params)
   const urlParams = new URLSearchParams(window.location.search)
 
   ReactGA.event({
@@ -41,6 +58,6 @@ export function trackEvent(eventName, params = {}) {
     utm_medium: urlParams.get('utm_medium') || 'nenhum',
     utm_campaign: urlParams.get('utm_campaign') || 'nenhuma',
     debug_mode: true,
-    ...params,
+    ...sanitizedParams,
   })
 }
