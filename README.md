@@ -111,7 +111,7 @@ O React realiza requisições diretamente aos serviços externos utilizados no f
 * **Git e GitHub:** versionamento.
 * **GitHub Actions:** automação do build e publicação.
 * **GitHub Pages:** hospedagem.
-* **Looker Studio:** dashboard para acompanhamento dos dados.
+* **Looker Studio:** dashboard para acompanhamento dos dados,com envio automático diário por e-mail.
 
 ## Decisões técnicas
 
