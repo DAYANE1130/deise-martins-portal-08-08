@@ -477,12 +477,12 @@ function App() {
         <div className="container hero__grid">
           <div className="hero__content">
             <p className="eyebrow">Ativação online e gratuita</p>
-            <h1 id="hero-title">Portal das <em>Chamas Gêmeas</em> 08/08</h1>
-            <p className="hero__subtitle">Frequência da Materialização</p>
+            <h1 id="hero-title">Portal das <em>Chamas Gêmeas</em> 09/09</h1>
+            <p className="hero__subtitle">Frequência da Finalização de ciclos</p>
             <p className="hero__description">A ativação da união começa em você.</p>
             <dl className="event-details" aria-label="Informações do evento">
-              <div><dt>Data</dt><dd>08/08</dd></div>
-              <div><dt>Horário</dt><dd>08:08</dd></div>
+              <div><dt>Data</dt><dd>09/09</dd></div>
+              <div><dt>Horário</dt><dd>09:09</dd></div>
               <div><dt>Formato</dt><dd>Online · Gratuito</dd></div>
             </dl>
             <div className="buttons">
