@@ -4,8 +4,8 @@
 
 ### Versões
 
-* `solution1`: versão inicial publicada, voltada à divulgação do evento e direcionamento para o grupo oficial do WhatsApp.
-* `solution2`: evolução da solução, incorporando captura de leads, identificação de origem, pesquisa, acompanhamento de ações e análise de dados.
+* Branch `solution_01`: versão inicial publicada, voltada à divulgação do evento e direcionamento para o grupo oficial do WhatsApp.
+* Branch`solution-2`: evolução da solução, incorporando captura de leads, identificação de origem, pesquisa, acompanhamento de ações e análise de dados.
 
 ## Visão geral
 
