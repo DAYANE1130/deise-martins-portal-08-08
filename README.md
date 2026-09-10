@@ -10,6 +10,8 @@ O projeto começou como uma landing page simples para centralizar as informaçõ
 
 A partir das necessidades observadas no uso da primeira versão, a solução evoluiu para um fluxo de captura e acompanhamento de interessados, passando a registrar dados de contato, origem dos acessos, respostas de pesquisa e interações realizadas durante a jornada.
 
+![Demonstração da solução](./src/assets/imagens/demo.gif)
+
 ## Contexto e evolução
 
 Inicialmente, a divulgação e o encaminhamento do público aconteciam de forma predominantemente manual.
