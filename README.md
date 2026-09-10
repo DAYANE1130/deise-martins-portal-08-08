@@ -2,6 +2,11 @@
 
 **Solução web desenvolvida para divulgação, captura e gestão de interessados, identificação de origem e análise de dados, com foco em apoiar a operação e a tomada de decisão do negócio.**
 
+### Versões
+
+* `solution1`: versão inicial publicada, voltada à divulgação do evento e direcionamento para o grupo oficial do WhatsApp.
+* `solution2`: evolução da solução, incorporando captura de leads, identificação de origem, pesquisa, acompanhamento de ações e análise de dados.
+
 ## Visão geral
 
 O LeadFlow foi desenvolvido para apoiar a divulgação do evento online e gratuito.
@@ -42,10 +47,6 @@ origem UTM + acompanhamento + GA4
 Dados para análise e tomada de decisão
 ```
 
-### Versões
-
-* `solution1`: versão inicial publicada, voltada à divulgação do evento e direcionamento para o grupo oficial do WhatsApp.
-* `solution2`: evolução da solução, incorporando captura de leads, identificação de origem, pesquisa, acompanhamento de ações e análise de dados.
 
 ## Requisitos e solução
 
